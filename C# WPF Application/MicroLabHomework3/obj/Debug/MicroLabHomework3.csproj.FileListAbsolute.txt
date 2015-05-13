@@ -1,0 +1,14 @@
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\bin\Debug\MicroLabHomework3.exe
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\bin\Debug\MicroLabHomework3.pdb
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3.csprojResolveAssemblyReference.cache
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MainWindow.g.cs
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\App.g.cs
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3_MarkupCompile.cache
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3_MarkupCompile.lref
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MainWindow.baml
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3.g.resources
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3.Properties.Resources.resources
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3.csproj.GenerateResource.Cache
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3.exe.licenses
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3.exe
+c:\users\utku\documents\visual studio 2013\Projects\MicroLabHomework3\MicroLabHomework3\obj\Debug\MicroLabHomework3.pdb
