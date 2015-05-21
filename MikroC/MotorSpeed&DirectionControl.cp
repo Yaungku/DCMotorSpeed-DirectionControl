@@ -29,6 +29,7 @@ char uart_rd;
 
 unsigned temp;
 int pwm;
+int counter = 0;
 
  int Map(int Value, int FromLow, int FromHigh, int ToLow, int ToHigh ){
 if(Value<FromLow){
@@ -143,7 +144,7 @@ void main() {
 
  uart_rd = UART1_Read();
 
- UART1_Write(uart_rd);
+
 
  PORTB = uart_rd & 0x80;
 
@@ -157,7 +158,7 @@ void main() {
  }
  else{
 
-
+ Display_Temperature(temp);
  }
 
  } while (1);

@@ -30,7 +30,7 @@ namespace MicroLabHomework3
         SerialPort port;
         public MainWindow()
         {
-            port = new SerialPort("COM11", 9600, Parity.None, 8, StopBits.One);
+            port = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
             InitializeComponent();
             TryOpenPort();
             port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
@@ -79,14 +79,16 @@ namespace MicroLabHomework3
             if (btnConnect.IsEnabled == false)
             {
                 byte[] data = new byte[1];
-                data[0] = (byte)((byte)Map(sliderPWM.Value, 5, 0, 0, 255) >> 1);
+                
                 if (sliderPWM.Value<5.00)
                 {
+                    data[0] = (byte)((byte)Map(sliderPWM.Value, 5, 0, 0, 255) >> 1);
                     //7. bit to False 
                     data[0] = (byte)(data[0] & 0x7F);                    
                 }
                 else
                 {
+                    data[0] = (byte)((byte)Map(sliderPWM.Value, 5, 10, 0, 255) >> 1);
                     //7. bit to True 
                     data[0] = (byte)(data[0] | 0x80);
                 }

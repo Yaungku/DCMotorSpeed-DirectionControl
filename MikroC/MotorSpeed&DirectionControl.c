@@ -28,6 +28,7 @@ char uart_rd;
 
 unsigned temp;
 int pwm;
+int counter = 0;
 // Mapping function to convert Temprature value to PWM duty.
   int Map(int Value, int FromLow, int FromHigh, int ToLow, int ToHigh ){
 if(Value<FromLow){
@@ -142,7 +143,7 @@ void main() {
          //Read one byte data
           uart_rd = UART1_Read();
           //Write this data to Uart for monitoring
-          UART1_Write(uart_rd);
+         // UART1_Write(uart_rd);
           // Equal 7. bit of PORTB to 7. bit of data
           PORTB =  uart_rd & 0x80;
           // Equal 6. bit of PORTB to reverse of  7. bit of PORTB
@@ -156,7 +157,7 @@ void main() {
     }
   else{
          //--- Format and display result on Lcd
-    //Display_Temperature(temp);
+    Display_Temperature(temp);
     }
 
   } while (1);

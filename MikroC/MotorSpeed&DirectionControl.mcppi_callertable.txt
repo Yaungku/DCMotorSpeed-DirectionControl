@@ -39,4 +39,23 @@ main
 		Delay_50us
 	UART1_Data_Ready
 	UART1_Read
-	UART1_Write
+	Display_Temperature
+		Div_8x8_U
+		Mul_16x16_U
+		Div_16x16_U
+		Lcd_Out
+			Lcd_Cmd
+				Delay_1us
+				Delay_5500us
+				Delay_50us
+			Lcd_Chr_CP
+				Lcd_Cmd
+					Delay_1us
+					Delay_5500us
+					Delay_50us
+		IntToStr
+			WordToStr
+				Div_16x16_U
+		UART1_Write_Text
+			UART1_Write
+		UART1_Write
