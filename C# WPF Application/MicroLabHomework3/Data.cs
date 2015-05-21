@@ -6,10 +6,14 @@ using System.Threading.Tasks;
 
 namespace MicroLabHomework3
 {
-    class Data
+    public class Data
     {
-        public double Temprature { get; set; }
-        public int PWMDuty { get; set; }
+        public string Temprature
+        {
+            get;
+            set;
+        }
+        public string PWMDuty { get; set; }
 
     }
 }

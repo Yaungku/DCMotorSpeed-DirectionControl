@@ -19,7 +19,8 @@ using Newtonsoft.Json;
 namespace MicroLabHomework3
 {
     public partial class MainWindow : DXWindow
-    {
+    {           
+
         SerialPort port;
         public MainWindow()
         {
@@ -43,14 +44,19 @@ namespace MicroLabHomework3
                 btnConnect.IsEnabled = true;
             }
         }
-        private static void DataReceivedHandler(
+        private void DataReceivedHandler(
                       object sender,
                       SerialDataReceivedEventArgs e)
         {
             SerialPort sp = (SerialPort)sender;            
             string indata = sp.ReadLine();
+            /*
             Data d = JsonConvert.DeserializeObject<Data>(indata);
+            txtTemp.Content = d.Temprature;
+            txtPWM.Content = d.PWMDuty;
+             * */
         }
+
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             TryOpenPort();
@@ -73,7 +79,7 @@ namespace MicroLabHomework3
                 };
                 if (sliderPWM.Value<5.00)
                 {
-                    data[1] = 0x10;
+                    data[1] = 0x02;
                     data[2] = (byte)Map(sliderPWM.Value, 5, 0, 0, 255);
                 }
                 else
