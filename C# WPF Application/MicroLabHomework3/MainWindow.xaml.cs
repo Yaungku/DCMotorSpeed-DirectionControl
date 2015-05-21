@@ -18,9 +18,15 @@ using Newtonsoft.Json;
 
 namespace MicroLabHomework3
 {
+    /*
+     * Communication will include only one byte that has 1 bit for direction and 7 bit for PWM duty.
+     *           _ | _ _ _ _ _ _ _
+     *          dir     PWM / 2 (PWM is 8 bit [0 - 255] so we will slide one bit and lose sensitivity)
+     *          
+     *          Microcontroller will select this 7 bit and multiply with two again and it will know the value of PWM Duty.  
+     * * */
     public partial class MainWindow : DXWindow
     {           
-
         SerialPort port;
         public MainWindow()
         {
@@ -69,30 +75,25 @@ namespace MicroLabHomework3
 
         private void sliderPWM_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            //Is serial port connected? 
             if (btnConnect.IsEnabled == false)
             {
-                byte[] data = new byte[4]{
-                0xFF,
-                0x00,
-                0x00,
-                0x00
-                };
+                byte[] data = new byte[1];
+                data[0] = (byte)((byte)Map(sliderPWM.Value, 5, 0, 0, 255) >> 1);
                 if (sliderPWM.Value<5.00)
                 {
-                    data[1] = 0x02;
-                    data[2] = (byte)Map(sliderPWM.Value, 5, 0, 0, 255);
+                    //7. bit to False 
+                    data[0] = (byte)(data[0] & 0x7F);                    
                 }
                 else
                 {
-                    data[1] = 0x01;
-                    data[2] = (byte)Map(sliderPWM.Value, 5, 10, 0, 255);
+                    //7. bit to True 
+                    data[0] = (byte)(data[0] | 0x80);
                 }
-                data[3] =(byte) (data[1] ^ data[2]);
-                TryWritePort(data);
-                
+                TryWritePort(data);                
             }
         }
-
+    
         private void TryWritePort(byte[] data)
         {
             try

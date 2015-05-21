@@ -24,7 +24,7 @@ char *whole = "000.0000";
 char *fr = "000.0000";
 char *strPwm = "000.0000";
 
-char uart_rd[4];
+char uart_rd;
 
 unsigned temp;
 int pwm;
@@ -139,16 +139,20 @@ void main() {
     temp = (Ow_Read(&PORTE, 2) << 8) + temp;
 
   if (UART1_Data_Ready()) {     // If data is received,
+         //Read one byte data
+          uart_rd = UART1_Read();
+          //Write this data to Uart for monitoring
+          UART1_Write(uart_rd);
+          // Equal 7. bit of PORTB to 7. bit of data
+          PORTB =  uart_rd & 0x80;
+          // Equal 6. bit of PORTB to reverse of  7. bit of PORTB
+          PORTB.F6 = ~PORTB.F7    ;
+          // 7. bit to zero
+          uart_rd = uart_rd & 0x7F;
+          // data * 2 to calculate pwm duty
+          uart_rd =   uart_rd << 1;
+         PWM1_Set_Duty(uart_rd);
 
-          UART1_Read_Text(*uart_rd, 0xFF, 4);
-          UART1_Write(uart_rd[0]);
-          UART1_Write(uart_rd[1]);
-          UART1_Write(uart_rd[2]);
-          UART1_Write(uart_rd[3]);
-          if((uart_rd[1]^uart_rd[2]) ==  uart_rd[3])  {
-            PORTB =  uart_rd[1] <<6;
-            PWM1_Set_Duty(uart_rd[2]);
-          }
     }
   else{
          //--- Format and display result on Lcd

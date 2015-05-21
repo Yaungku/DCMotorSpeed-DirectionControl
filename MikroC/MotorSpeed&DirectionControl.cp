@@ -1,4 +1,4 @@
-#line 1 "C:/Users/utku/Documents/GitHub/PICRotateDCMotorDependsOnTemprature/MotorSpeed&DirectionControl.c"
+#line 1 "C:/Users/utku/Documents/GitHub/DCMotorSpeed-DirectionControl/MikroC/MotorSpeed&DirectionControl.c"
 
 sbit LCD_RS at RB4_bit;
 sbit LCD_EN at RB5_bit;
@@ -25,7 +25,7 @@ char *whole = "000.0000";
 char *fr = "000.0000";
 char *strPwm = "000.0000";
 
-char uart_rd[4];
+char uart_rd;
 
 unsigned temp;
 int pwm;
@@ -141,17 +141,21 @@ void main() {
 
  if (UART1_Data_Ready()) {
 
- UART1_Read_Text(*uart_rd, 0xFF, 4);
- if((uart_rd[1]^uart_rd[2]) == uart_rd[3]) {
- PORTB = uart_rd[1] <<6;
- PWM1_Set_Duty(uart_rd[2]);
+ uart_rd = UART1_Read();
+
+ UART1_Write(uart_rd);
+
+ PORTB = uart_rd & 0x80;
+
+ PORTB.F6 = ~PORTB.F7 ;
+
+ uart_rd = uart_rd & 0x7F;
+
+ uart_rd = uart_rd << 1;
+ PWM1_Set_Duty(uart_rd);
+
  }
- UART1_Write(uart_rd[0]);
- UART1_Write(uart_rd[1]);
- UART1_Write(uart_rd[2]);
- UART1_Write(uart_rd[3]);
- delay_ms(500) ;
- }else{
+ else{
 
 
  }

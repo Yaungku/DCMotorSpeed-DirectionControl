@@ -10,10 +10,10 @@ _Map:
 	XORWF      FARG_Map_FromLow+1, 0
 	SUBWF      R0+0, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__Map16
+	GOTO       L__Map14
 	MOVF       FARG_Map_FromLow+0, 0
 	SUBWF      FARG_Map_Value+0, 0
-L__Map16:
+L__Map14:
 	BTFSC      STATUS+0, 0
 	GOTO       L_Map0
 ;MotorSpeed&DirectionControl.c,34 :: 		Value = FromLow;
@@ -31,10 +31,10 @@ L_Map0:
 	XORWF      FARG_Map_Value+1, 0
 	SUBWF      R0+0, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__Map17
+	GOTO       L__Map15
 	MOVF       FARG_Map_Value+0, 0
 	SUBWF      FARG_Map_FromHigh+0, 0
-L__Map17:
+L__Map15:
 	BTFSC      STATUS+0, 0
 	GOTO       L_Map1
 ;MotorSpeed&DirectionControl.c,37 :: 		Value = FromHigh;
@@ -552,84 +552,51 @@ L_main10:
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
 	GOTO       L_main11
-;MotorSpeed&DirectionControl.c,143 :: 		UART1_Read_Text(*uart_rd, 0xFF, 4);
-	MOVF       _uart_rd+0, 0
-	MOVWF      FARG_UART1_Read_Text_Output+0
-	MOVLW      255
-	MOVWF      FARG_UART1_Read_Text_Delimiter+0
-	MOVLW      4
-	MOVWF      FARG_UART1_Read_Text_Attempts+0
-	CALL       _UART1_Read_Text+0
-;MotorSpeed&DirectionControl.c,144 :: 		if((uart_rd[1]^uart_rd[2]) ==  uart_rd[3])  {
-	MOVF       _uart_rd+2, 0
-	XORWF      _uart_rd+1, 0
-	MOVWF      R1+0
-	MOVF       R1+0, 0
-	XORWF      _uart_rd+3, 0
-	BTFSS      STATUS+0, 2
-	GOTO       L_main12
-;MotorSpeed&DirectionControl.c,145 :: 		PORTB =  uart_rd[1] <<6;
-	MOVLW      6
-	MOVWF      R1+0
-	MOVF       _uart_rd+1, 0
+;MotorSpeed&DirectionControl.c,143 :: 		uart_rd = UART1_Read();
+	CALL       _UART1_Read+0
+	MOVF       R0+0, 0
+	MOVWF      _uart_rd+0
+;MotorSpeed&DirectionControl.c,145 :: 		UART1_Write(uart_rd);
+	MOVF       R0+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;MotorSpeed&DirectionControl.c,147 :: 		PORTB =  uart_rd & 0x80;
+	MOVLW      128
+	ANDWF      _uart_rd+0, 0
+	MOVWF      PORTB+0
+;MotorSpeed&DirectionControl.c,149 :: 		PORTB.F6 = ~PORTB.F7    ;
+	BTFSC      PORTB+0, 7
+	GOTO       L__main18
+	BSF        PORTB+0, 6
+	GOTO       L__main19
+L__main18:
+	BCF        PORTB+0, 6
+L__main19:
+;MotorSpeed&DirectionControl.c,151 :: 		uart_rd = uart_rd & 0x7F;
+	MOVLW      127
+	ANDWF      _uart_rd+0, 0
+	MOVWF      R2+0
+	MOVF       R2+0, 0
+	MOVWF      _uart_rd+0
+;MotorSpeed&DirectionControl.c,153 :: 		uart_rd =   uart_rd << 1;
+	MOVF       R2+0, 0
 	MOVWF      R0+0
-	MOVF       R1+0, 0
-L__main20:
-	BTFSC      STATUS+0, 2
-	GOTO       L__main21
 	RLF        R0+0, 1
 	BCF        R0+0, 0
-	ADDLW      255
-	GOTO       L__main20
-L__main21:
 	MOVF       R0+0, 0
-	MOVWF      PORTB+0
-;MotorSpeed&DirectionControl.c,146 :: 		PWM1_Set_Duty(uart_rd[2]);
-	MOVF       _uart_rd+2, 0
+	MOVWF      _uart_rd+0
+;MotorSpeed&DirectionControl.c,154 :: 		PWM1_Set_Duty(uart_rd);
+	MOVF       R0+0, 0
 	MOVWF      FARG_PWM1_Set_Duty_new_duty+0
 	CALL       _PWM1_Set_Duty+0
-;MotorSpeed&DirectionControl.c,147 :: 		}
-L_main12:
-;MotorSpeed&DirectionControl.c,148 :: 		UART1_Write(uart_rd[0]);
-	MOVF       _uart_rd+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;MotorSpeed&DirectionControl.c,149 :: 		UART1_Write(uart_rd[1]);
-	MOVF       _uart_rd+1, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;MotorSpeed&DirectionControl.c,150 :: 		UART1_Write(uart_rd[2]);
-	MOVF       _uart_rd+2, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;MotorSpeed&DirectionControl.c,151 :: 		UART1_Write(uart_rd[3]);
-	MOVF       _uart_rd+3, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;MotorSpeed&DirectionControl.c,152 :: 		delay_ms(500)  ;
-	MOVLW      3
-	MOVWF      R11+0
-	MOVLW      138
-	MOVWF      R12+0
-	MOVLW      85
-	MOVWF      R13+0
-L_main13:
-	DECFSZ     R13+0, 1
-	GOTO       L_main13
-	DECFSZ     R12+0, 1
-	GOTO       L_main13
-	DECFSZ     R11+0, 1
-	GOTO       L_main13
-	NOP
-	NOP
-;MotorSpeed&DirectionControl.c,153 :: 		}else{
-	GOTO       L_main14
-L_main11:
 ;MotorSpeed&DirectionControl.c,156 :: 		}
-L_main14:
-;MotorSpeed&DirectionControl.c,158 :: 		} while (1);
+	GOTO       L_main12
+L_main11:
+;MotorSpeed&DirectionControl.c,160 :: 		}
+L_main12:
+;MotorSpeed&DirectionControl.c,162 :: 		} while (1);
 	GOTO       L_main7
-;MotorSpeed&DirectionControl.c,159 :: 		}
+;MotorSpeed&DirectionControl.c,163 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main
