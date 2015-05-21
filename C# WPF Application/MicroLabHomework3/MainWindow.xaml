@@ -5,7 +5,7 @@
     xmlns:local="clr-namespace:MicroLabHomework3"
     xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
     xmlns:dxga="http://schemas.devexpress.com/winfx/2008/xaml/gauges"
-    Title="DXApplication" Height="700" Width="1100"
+    Title="BAU Mechatronics Microcontroller Lab." Height="700" Width="1100"
     SnapsToDevicePixels="True" UseLayoutRounding="True"
     dx:ThemeManager.ThemeName="Office2010Black"
     >
@@ -28,9 +28,11 @@
                 <Button IsEnabled="True" Name="btnConnect" Click="btnConnect_Click" Content="Connect" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="106,10,0,0"/>
                 <Label Content="Data From Microcontroller" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="0,70,0,0"/>
                 <Label Content="Temprature:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="0,90,0,0"/>
-                <Label Name="txtTemp" Content="" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="90,90,0,0"/>
+                <TextBlock Name="txtTemp" Text="" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="90,90,0,0"></TextBlock>
+               
                 <Label Content="PWM Duty:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="0,115,0,0"/>
-                <Label Name="txtPWM" Content="" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="90,115,0,0"/>
+                <TextBlock Name="txtPWM" Text="" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="90,115,0,0"></TextBlock>
+                
             </Grid>
 
         </Border>
@@ -38,10 +40,14 @@
             <Grid Margin="7,-3,-7,3">
                 <Slider Name="sliderPWM" Value="5.00000" Grid.ColumnSpan="2" HorizontalAlignment="Center"  VerticalAlignment="Center" Width="517" ValueChanged="sliderPWM_ValueChanged"/>
                 <Label Grid.ColumnSpan="2" Content="0" HorizontalAlignment="Center" Margin="0,300,0,0" VerticalAlignment="Top"/>
-                <Label Grid.ColumnSpan="2" Content="255 (max)" HorizontalAlignment="Center" Margin="-500,300,0,0" VerticalAlignment="Top"/>
-                <Label Grid.ColumnSpan="2" Content="255 (max)" HorizontalAlignment="Center" Margin="500,300,0,0" VerticalAlignment="Top"/>
+                <Label Grid.ColumnSpan="2" Content="254 (max)" HorizontalAlignment="Center" Margin="-500,300,0,0" VerticalAlignment="Top"/>
+                <Label Grid.ColumnSpan="2" Content="254 (max)" HorizontalAlignment="Center" Margin="500,300,0,0" VerticalAlignment="Top"/>
                 <Label Grid.ColumnSpan="2" Content="+ Direction" HorizontalAlignment="Center" Margin="500,350,0,0" VerticalAlignment="Top"/>
                 <Label Grid.ColumnSpan="2" Content="- Direction" HorizontalAlignment="Center" Margin="-500,350,0,0" VerticalAlignment="Top"/>
+
+                <ScrollViewer Height="60" Grid.ColumnSpan="2"  VerticalAlignment="Bottom" HorizontalScrollBarVisibility="Auto">
+                    <TextBlock Name="txtError"></TextBlock>
+                </ScrollViewer>
                 <Image Grid.ColumnSpan="2" Source="Asset\arrow.png" HorizontalAlignment="Center" VerticalAlignment="Top" Width="124" Margin="-300,350,0,0" Height="19"/>
                 <Image Grid.ColumnSpan="2" Source="Asset\arrow.png" HorizontalAlignment="Center" VerticalAlignment="Top" Width="124" Margin="300,350,0,0" Height="19" RenderTransformOrigin="0.5,0.5">
                     <Image.RenderTransform>

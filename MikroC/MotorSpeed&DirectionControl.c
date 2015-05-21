@@ -83,9 +83,7 @@ void Display_Temperature(unsigned int temp2write) {
       IntToStr(temp_fraction,fr);
       IntToStr(pwm,strPwm);
       UART1_Write_Text("{\"Temprature\":\"");
-      UART1_Write_Text(whole);
-      UART1_Write_Text(".");
-      UART1_Write_Text(fr);
+      UART1_Write_Text(text);
       UART1_Write_Text("\",\"PWMDuty\":\"");
       UART1_Write_Text(strPwm);
       UART1_Write_Text("\"}");
@@ -153,11 +151,18 @@ void main() {
           // data * 2 to calculate pwm duty
           uart_rd =   uart_rd << 1;
          PWM1_Set_Duty(uart_rd);
+         pwm = uart_rd;
 
     }
   else{
-         //--- Format and display result on Lcd
-    Display_Temperature(temp);
+   if(PORTD.F2 == 1){
+     if(counter > 10){
+           //--- Format and display result on Lcd
+      Display_Temperature(temp);
+      counter = 0;
+      }
+    }
+    counter = counter + 1;
     }
 
   } while (1);

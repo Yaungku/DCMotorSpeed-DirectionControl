@@ -14,6 +14,7 @@ using DevExpress.Xpf.Core;
 using DevExpress.Xpf.Gauges;
 using System.IO.Ports;
 using Newtonsoft.Json;
+using System.Windows.Threading;
 
 
 namespace MicroLabHomework3
@@ -26,14 +27,41 @@ namespace MicroLabHomework3
      *          Microcontroller will select this 7 bit and multiply with two again and it will know the value of PWM Duty.  
      * * */
     public partial class MainWindow : DXWindow
-    {           
+    {
         SerialPort port;
+        DispatcherTimer dispatcherTimer;
+        byte[] data;
         public MainWindow()
         {
+            // COM Port can be change in this row
             port = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
             InitializeComponent();
             TryOpenPort();
             port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
+
+            //  DispatcherTimer setup
+            dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+            dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
+            // Set dispatcherTimer_Tick method will be called in every one second
+            dispatcherTimer.Interval = new TimeSpan(0, 0,0,1,0);
+            dispatcherTimer.Start();
+        }
+        // this method checks that the value of PWM duty from microcontroller is equal to user interface settings
+        // if not, the method send the value again. 
+        private void dispatcherTimer_Tick(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(txtPWM.Text))
+            {
+                if (data != null)
+                {
+                    byte checkdata = (byte)(data[0] & 0x7F);
+                    checkdata = (byte)(checkdata << 1);
+                    if (Convert.ToInt32(txtPWM.Text) != (int)checkdata)
+                    {
+                        TryWritePort(data);
+                    }
+                }           
+            }
         }
 
         private void TryOpenPort()
@@ -54,13 +82,31 @@ namespace MicroLabHomework3
                       object sender,
                       SerialDataReceivedEventArgs e)
         {
-            SerialPort sp = (SerialPort)sender;            
+            SerialPort sp = (SerialPort)sender;
             string indata = sp.ReadLine();
-            /*
-            Data d = JsonConvert.DeserializeObject<Data>(indata);
-            txtTemp.Content = d.Temprature;
-            txtPWM.Content = d.PWMDuty;
-             * */
+            try
+            {
+                Data d = JsonConvert.DeserializeObject<Data>(indata);
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    try
+                    {
+                        txtTemp.Text = d.Temprature.Trim();
+                        txtPWM.Text = d.PWMDuty.Trim();
+                    }
+                    catch (Exception)
+                    {
+                        txtError.Text += "Json string could not parse to text!\n";
+                    }
+
+                }));
+
+            }
+            catch (Exception)
+            {
+                txtError.Text += "Json string could not parse to text!\n";
+            }
+
         }
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
@@ -78,13 +124,13 @@ namespace MicroLabHomework3
             //Is serial port connected? 
             if (btnConnect.IsEnabled == false)
             {
-                byte[] data = new byte[1];
-                
-                if (sliderPWM.Value<5.00)
+                data = new byte[1];
+
+                if (sliderPWM.Value < 5.00)
                 {
                     data[0] = (byte)((byte)Map(sliderPWM.Value, 5, 0, 0, 255) >> 1);
                     //7. bit to False 
-                    data[0] = (byte)(data[0] & 0x7F);                    
+                    data[0] = (byte)(data[0] & 0x7F);
                 }
                 else
                 {
@@ -92,10 +138,10 @@ namespace MicroLabHomework3
                     //7. bit to True 
                     data[0] = (byte)(data[0] | 0x80);
                 }
-                TryWritePort(data);                
+                TryWritePort(data);
             }
         }
-    
+
         private void TryWritePort(byte[] data)
         {
             try
@@ -113,7 +159,6 @@ namespace MicroLabHomework3
         {
             double Result;
             Result = (((Value - FromLow) * (ToHigh - ToLow)) / (FromHigh - FromLow)) + ToLow;
-
             return Result;
         }
     }
