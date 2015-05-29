@@ -34,7 +34,7 @@ namespace MicroLabHomework3
         public MainWindow()
         {
             // COM Port can be change in this row
-            port = new SerialPort("COM3", 9600, Parity.None, 8, StopBits.One);
+            port = new SerialPort("COM7", 9600, Parity.None, 8, StopBits.One);
             InitializeComponent();
             TryOpenPort();
             port.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
@@ -104,7 +104,11 @@ namespace MicroLabHomework3
             }
             catch (Exception)
             {
-                txtError.Text += "Json string could not parse to text!\n";
+                this.Dispatcher.Invoke((Action)(() =>
+                {
+                    txtError.Text += "Json string could not parse to text!\n";
+                }));
+               
             }
 
         }

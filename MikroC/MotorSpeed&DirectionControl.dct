@@ -603,6 +603,7 @@ inte
 inte_bit
 intedg
 intedg_bit
+interrupt
 intf
 intf_bit
 inttohex
@@ -691,7 +692,6 @@ man_synchro
 manchester_0
 manchester_1
 manchester_out
-map
 max
 mc1out
 mc1out_bit

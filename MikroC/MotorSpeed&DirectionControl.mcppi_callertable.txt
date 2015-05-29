@@ -37,8 +37,6 @@ main
 	Ow_Read
 		Delay_1us
 		Delay_50us
-	UART1_Data_Ready
-	UART1_Read
 	Display_Temperature
 		Div_8x8_U
 		Mul_16x16_U
@@ -59,3 +57,5 @@ main
 		UART1_Write_Text
 			UART1_Write
 		UART1_Write
+Interrupt
+	UART1_Read

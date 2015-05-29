@@ -28,20 +28,11 @@ char *strPwm = "000.0000";
 char uart_rd;
 
 unsigned temp;
-int pwm;
+int pwm =0;
 int counter = 0;
-
- int Map(int Value, int FromLow, int FromHigh, int ToLow, int ToHigh ){
-if(Value<FromLow){
-Value = FromLow;
-}
-if(Value>FromHigh){
-Value = FromHigh;
-}
-return (int)(((Value - FromLow) * (ToHigh - ToLow)) / (FromHigh - FromLow)) + ToLow;
-}
-
+#line 44 "C:/Users/utku/Documents/GitHub/DCMotorSpeed-DirectionControl/MikroC/MotorSpeed&DirectionControl.c"
 void Display_Temperature(unsigned int temp2write) {
+
  const unsigned short RES_SHIFT = TEMP_RESOLUTION - 8;
  char temp_whole;
  unsigned int temp_fraction;
@@ -90,10 +81,29 @@ void Display_Temperature(unsigned int temp2write) {
  UART1_Write_Text("\"}");
  UART1_Write(10);
  UART1_Write(13);
-
  }
 }
+void Interrupt(){
+if(PIR1.RCIF){
 
+
+ uart_rd = UART1_Read();
+
+
+ PORTB.F3 = 1;
+
+ PORTB = uart_rd & 0x80;
+
+ PORTB.F6 = ~PORTB.F7 ;
+
+ uart_rd = uart_rd & 0x7F;
+
+ uart_rd = uart_rd << 1;
+
+ pwm = uart_rd;
+ PORTB.F3 = 0;
+ }
+}
 void main() {
  ANSEL = 0;
  ANSELH = 0;
@@ -104,7 +114,13 @@ void main() {
  TRISD = 0xFF;
  PORTD = 0;
  TRISB = 0;
+ PORTB = 255;
+ Delay_ms(500);
  PORTB = 0;
+
+ INTCON.GIE = 1;
+ INTCON.PEIE = 1;
+ PIE1.RCIE=1;
 
  UART1_Init(9600);
  Delay_ms(100);
@@ -138,24 +154,6 @@ void main() {
  temp = Ow_Read(&PORTE, 2);
  temp = (Ow_Read(&PORTE, 2) << 8) + temp;
 
- if (UART1_Data_Ready()) {
-
- uart_rd = UART1_Read();
-
-
-
- PORTB = uart_rd & 0x80;
-
- PORTB.F6 = ~PORTB.F7 ;
-
- uart_rd = uart_rd & 0x7F;
-
- uart_rd = uart_rd << 1;
- PWM1_Set_Duty(uart_rd);
- pwm = uart_rd;
-
- }
- else{
  if(PORTD.F2 == 1){
  if(counter > 10){
 
@@ -164,7 +162,8 @@ void main() {
  }
  }
  counter = counter + 1;
- }
+ PWM1_Set_Duty(pwm);
 
+ asm CLRWDT;
  } while (1);
 }

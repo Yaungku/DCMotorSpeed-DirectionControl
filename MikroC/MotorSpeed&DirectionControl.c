@@ -27,10 +27,11 @@ char *strPwm = "000.0000";
 char uart_rd;
 
 unsigned temp;
-int pwm;
+int pwm =0;
 int counter = 0;
 // Mapping function to convert Temprature value to PWM duty.
-  int Map(int Value, int FromLow, int FromHigh, int ToLow, int ToHigh ){
+  /*
+int Map(int Value, int FromLow, int FromHigh, int ToLow, int ToHigh ){
 if(Value<FromLow){
 Value = FromLow;
 }
@@ -39,8 +40,9 @@ Value = FromHigh;
 }
 return  (int)(((Value - FromLow) * (ToHigh - ToLow)) / (FromHigh - FromLow)) + ToLow;
 }
-
+  */
 void Display_Temperature(unsigned int temp2write) {
+
   const unsigned short RES_SHIFT = TEMP_RESOLUTION - 8;
   char temp_whole;
   unsigned int temp_fraction;
@@ -89,10 +91,29 @@ void Display_Temperature(unsigned int temp2write) {
       UART1_Write_Text("\"}");
       UART1_Write(10);
       UART1_Write(13);
-
       }
 }
+void Interrupt(){
+if(PIR1.RCIF){
+  // If data is received,
+          //Read one byte data
+          uart_rd = UART1_Read();
+          //Write this data to Uart for monitoring
+          // UART1_Write(uart_rd);
+          PORTB.F3 = 1;
+          // Equal 7. bit of PORTB to 7. bit of data
+          PORTB =  uart_rd & 0x80;
+          // Equal 6. bit of PORTB to reverse of  7. bit of PORTB
+          PORTB.F6 = ~PORTB.F7    ;
+          // 7. bit to zero
+          uart_rd = uart_rd & 0x7F;
+          // data * 2 to calculate pwm duty
+          uart_rd =   uart_rd << 1;
 
+          pwm = uart_rd;
+          PORTB.F3 = 0;
+  }
+}
 void main() {
   ANSEL  = 0;                                    // Configure AN pins as digital I/O
   ANSELH = 0;
@@ -103,8 +124,14 @@ void main() {
   TRISD = 0xFF;
   PORTD = 0;
   TRISB = 0;
+  PORTB = 255;
+  Delay_ms(500);
   PORTB = 0;
-  
+   //Interrupt Uart Init
+   INTCON.GIE = 1;
+     INTCON.PEIE = 1;
+     PIE1.RCIE=1;    //enable receive interrupt
+     
   UART1_Init(9600);
   Delay_ms(100);
 
@@ -137,33 +164,16 @@ void main() {
     temp =  Ow_Read(&PORTE, 2);
     temp = (Ow_Read(&PORTE, 2) << 8) + temp;
 
-  if (UART1_Data_Ready()) {     // If data is received,
-         //Read one byte data
-          uart_rd = UART1_Read();
-          //Write this data to Uart for monitoring
-         // UART1_Write(uart_rd);
-          // Equal 7. bit of PORTB to 7. bit of data
-          PORTB =  uart_rd & 0x80;
-          // Equal 6. bit of PORTB to reverse of  7. bit of PORTB
-          PORTB.F6 = ~PORTB.F7    ;
-          // 7. bit to zero
-          uart_rd = uart_rd & 0x7F;
-          // data * 2 to calculate pwm duty
-          uart_rd =   uart_rd << 1;
-         PWM1_Set_Duty(uart_rd);
-         pwm = uart_rd;
-
-    }
-  else{
    if(PORTD.F2 == 1){
      if(counter > 10){
-           //--- Format and display result on Lcd
+           //--- Format and display result on Lcd  & Send to UART
       Display_Temperature(temp);
       counter = 0;
       }
     }
     counter = counter + 1;
-    }
-
+    PWM1_Set_Duty(pwm);
+    //watchdog timer
+    asm CLRWDT;
   } while (1);
 }
