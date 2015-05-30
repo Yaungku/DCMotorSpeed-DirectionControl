@@ -6,28 +6,6 @@ main
 	PWM1_Start
 	PWM1_Set_Duty
 		Mul_16x16_U
-	Lcd_Init
-		Delay_5500us
-		Delay_1us
-	Lcd_Cmd
-		Delay_1us
-		Delay_5500us
-		Delay_50us
-	Lcd_Out
-		Lcd_Cmd
-			Delay_1us
-			Delay_5500us
-			Delay_50us
-		Lcd_Chr_CP
-			Lcd_Cmd
-				Delay_1us
-				Delay_5500us
-				Delay_50us
-	Lcd_Chr
-		Lcd_Cmd
-			Delay_1us
-			Delay_5500us
-			Delay_50us
 	Ow_Reset
 		Delay_500us
 		Delay_80us
@@ -41,16 +19,6 @@ main
 		Div_8x8_U
 		Mul_16x16_U
 		Div_16x16_U
-		Lcd_Out
-			Lcd_Cmd
-				Delay_1us
-				Delay_5500us
-				Delay_50us
-			Lcd_Chr_CP
-				Lcd_Cmd
-					Delay_1us
-					Delay_5500us
-					Delay_50us
 		IntToStr
 			WordToStr
 				Div_16x16_U

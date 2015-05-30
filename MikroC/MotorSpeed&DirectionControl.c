@@ -1,19 +1,3 @@
-// LCD module connections
-sbit LCD_RS at RB4_bit;
-sbit LCD_EN at RB5_bit;
-sbit LCD_D4 at RB0_bit;
-sbit LCD_D5 at RB1_bit;
-sbit LCD_D6 at RB2_bit;
-sbit LCD_D7 at RB3_bit;
-
-sbit LCD_RS_Direction at TRISB4_bit;
-sbit LCD_EN_Direction at TRISB5_bit;
-sbit LCD_D4_Direction at TRISB0_bit;
-sbit LCD_D5_Direction at TRISB1_bit;
-sbit LCD_D6_Direction at TRISB2_bit;
-sbit LCD_D7_Direction at TRISB3_bit;
-// End LCD module connections
-
 //  Set TEMP_RESOLUTION to the corresponding resolution of used DS18x20 sensor:
 //  18S20: 9  (default setting; can be 9,10,11,or 12)
 //  18B20: 12
@@ -75,11 +59,7 @@ void Display_Temperature(unsigned int temp2write) {
   text[5] = (temp_fraction/100)%10 + 48;         // Extract hundreds digit
   text[6] = (temp_fraction/10)%10  + 48;         // Extract tens digit
   text[7] =  temp_fraction%10      + 48;         // Extract ones digit
-
-  // Print temperature on LCD
-  Lcd_Out(2, 5, text);
-
-  //Send datas via bluetooth or Uart as json format string
+  //Send datas via bluetooth (Uart) as json format string if bluetooth was connected
   if(PORTD.F2 == 1){
       IntToStr(temp_whole,whole);
       IntToStr(temp_fraction,fr);
@@ -124,6 +104,7 @@ void main() {
   TRISD = 0xFF;
   PORTD = 0;
   TRISB = 0;
+  // Check the Pic reset or not
   PORTB = 255;
   Delay_ms(500);
   PORTB = 0;
@@ -139,18 +120,9 @@ void main() {
   PWM1_Start();
   PWM1_Set_Duty(0);
 
-  Lcd_Init();                                    // Initialize LCD
-  Lcd_Cmd(_LCD_CLEAR);                           // Clear LCD
-  Lcd_Cmd(_LCD_CURSOR_OFF);                      // Turn cursor off
-  Lcd_Out(1, 1, " Temperature:   ");
-  // Print degree character, 'C' for Centigrades
-  Lcd_Chr(2,13,223);                             // Different LCD displays have different char code for degree
-                                                 // If you see greek alpha letter try typing 178 instead of 223
-
-  Lcd_Chr(2,14,'C');
-
   //--- Main loop
   do {
+  if(counter > 10){
     //--- Perform temperature reading
     Ow_Reset(&PORTE, 2);                         // Onewire reset signal
     Ow_Write(&PORTE, 2, 0xCC);                   // Issue command SKIP_ROM
@@ -163,17 +135,13 @@ void main() {
 
     temp =  Ow_Read(&PORTE, 2);
     temp = (Ow_Read(&PORTE, 2) << 8) + temp;
-
-   if(PORTD.F2 == 1){
-     if(counter > 10){
-           //--- Format and display result on Lcd  & Send to UART
+           //--- Format and Send result to UART
       Display_Temperature(temp);
       counter = 0;
       }
-    }
     counter = counter + 1;
     PWM1_Set_Duty(pwm);
-    //watchdog timer
+    //watchdog timer clear
     asm CLRWDT;
   } while (1);
 }

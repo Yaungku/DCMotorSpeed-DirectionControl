@@ -7,7 +7,7 @@
     xmlns:dxga="http://schemas.devexpress.com/winfx/2008/xaml/gauges"
     Title="BAU Mechatronics Microcontroller Lab." Height="700" Width="1100"
     SnapsToDevicePixels="True" UseLayoutRounding="True"
-    dx:ThemeManager.ThemeName="Office2010Black"
+    dx:ThemeManager.ThemeName="Office2010Black" Unloaded="DXWindow_Unloaded"
     >
     <dx:DXWindow.Resources>
 

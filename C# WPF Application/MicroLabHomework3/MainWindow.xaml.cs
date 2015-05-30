@@ -43,7 +43,7 @@ namespace MicroLabHomework3
             dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
             dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
             // Set dispatcherTimer_Tick method will be called in every one second
-            dispatcherTimer.Interval = new TimeSpan(0, 0,0,1,0);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 1, 0);
             dispatcherTimer.Start();
         }
         // this method checks that the value of PWM duty from microcontroller is equal to user interface settings
@@ -60,7 +60,7 @@ namespace MicroLabHomework3
                     {
                         TryWritePort(data);
                     }
-                }           
+                }
             }
         }
 
@@ -92,6 +92,19 @@ namespace MicroLabHomework3
                     try
                     {
                         txtTemp.Text = d.Temprature.Trim();
+                        // If first char is zero, loop works 
+                        while( txtTemp.Text.Substring(0,1) == "0")
+                        {
+                            //control the first char is not last char before the dot. (like 0.50 Celsius)
+                            if (( txtTemp.Text.Substring(1,1) !="."))
+                            {
+                                 txtTemp.Text=  txtTemp.Text.Remove(0, 1);                                 
+                            }
+                            else
+                            {
+                                break;
+                            }                         
+                        }
                         txtPWM.Text = d.PWMDuty.Trim();
                     }
                     catch (Exception)
@@ -108,9 +121,8 @@ namespace MicroLabHomework3
                 {
                     txtError.Text += "Json string could not parse to text!\n";
                 }));
-               
-            }
 
+            }
         }
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
@@ -164,6 +176,25 @@ namespace MicroLabHomework3
             double Result;
             Result = (((Value - FromLow) * (ToHigh - ToLow)) / (FromHigh - FromLow)) + ToLow;
             return Result;
+        }
+
+        private void DXWindow_Unloaded(object sender, RoutedEventArgs e)
+        {
+            //Is serial port connected? 
+            if (btnConnect.IsEnabled == false)
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    data = new byte[1];
+                    //Send 0 to PWM 
+                    data[0] = (byte)0x00;
+                    //7. bit to True 
+                    data[0] = (byte)(data[0] | 0x80);
+
+                    TryWritePort(data);
+                }
+               
+            }
         }
     }
 

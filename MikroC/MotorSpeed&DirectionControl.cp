@@ -1,21 +1,5 @@
 #line 1 "C:/Users/utku/Documents/GitHub/DCMotorSpeed-DirectionControl/MikroC/MotorSpeed&DirectionControl.c"
 
-sbit LCD_RS at RB4_bit;
-sbit LCD_EN at RB5_bit;
-sbit LCD_D4 at RB0_bit;
-sbit LCD_D5 at RB1_bit;
-sbit LCD_D6 at RB2_bit;
-sbit LCD_D7 at RB3_bit;
-
-sbit LCD_RS_Direction at TRISB4_bit;
-sbit LCD_EN_Direction at TRISB5_bit;
-sbit LCD_D4_Direction at TRISB0_bit;
-sbit LCD_D5_Direction at TRISB1_bit;
-sbit LCD_D6_Direction at TRISB2_bit;
-sbit LCD_D7_Direction at TRISB3_bit;
-
-
-
 
 
 const unsigned short TEMP_RESOLUTION = 9;
@@ -30,7 +14,7 @@ char uart_rd;
 unsigned temp;
 int pwm =0;
 int counter = 0;
-#line 44 "C:/Users/utku/Documents/GitHub/DCMotorSpeed-DirectionControl/MikroC/MotorSpeed&DirectionControl.c"
+#line 28 "C:/Users/utku/Documents/GitHub/DCMotorSpeed-DirectionControl/MikroC/MotorSpeed&DirectionControl.c"
 void Display_Temperature(unsigned int temp2write) {
 
  const unsigned short RES_SHIFT = TEMP_RESOLUTION - 8;
@@ -65,10 +49,6 @@ void Display_Temperature(unsigned int temp2write) {
  text[5] = (temp_fraction/100)%10 + 48;
  text[6] = (temp_fraction/10)%10 + 48;
  text[7] = temp_fraction%10 + 48;
-
-
- Lcd_Out(2, 5, text);
-
 
  if(PORTD.F2 == 1){
  IntToStr(temp_whole,whole);
@@ -114,6 +94,7 @@ void main() {
  TRISD = 0xFF;
  PORTD = 0;
  TRISB = 0;
+
  PORTB = 255;
  Delay_ms(500);
  PORTB = 0;
@@ -129,18 +110,9 @@ void main() {
  PWM1_Start();
  PWM1_Set_Duty(0);
 
- Lcd_Init();
- Lcd_Cmd(_LCD_CLEAR);
- Lcd_Cmd(_LCD_CURSOR_OFF);
- Lcd_Out(1, 1, " Temperature:   ");
-
- Lcd_Chr(2,13,223);
-
-
- Lcd_Chr(2,14,'C');
-
 
  do {
+ if(counter > 10){
 
  Ow_Reset(&PORTE, 2);
  Ow_Write(&PORTE, 2, 0xCC);
@@ -154,12 +126,8 @@ void main() {
  temp = Ow_Read(&PORTE, 2);
  temp = (Ow_Read(&PORTE, 2) << 8) + temp;
 
- if(PORTD.F2 == 1){
- if(counter > 10){
-
  Display_Temperature(temp);
  counter = 0;
- }
  }
  counter = counter + 1;
  PWM1_Set_Duty(pwm);
